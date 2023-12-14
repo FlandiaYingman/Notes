@@ -1,0 +1,351 @@
+\documentclass{note}
+
+\title{MATH 1013}
+\author{Y. H. Harry Li}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\chapter{Review}
+\section{Basics}
+\section{Functions}
+
+\subsection{Trigonometric Functions}
+
+\subsubsection{Pythagorean Identities}
+
+The following identities are derived from trigonometric functions' definition and Pythagorean theorem.
+\begin{align*}
+    \sin^2 x + \cos^2 x = 1 \\
+    \tan^2 x + 1 = \sec^2 x \\
+    \cot^2 x + 1 = \csc^2 x 
+\end{align*}
+
+\subsubsection{Angle Sum and Difference Identities}
+
+The following identities are derived geometrically. I hate geometry, so no proofs here.
+\begin{align*}
+    \sin(\alpha\pm\beta) & = \sin\alpha\cos\beta \pm \sin\beta\cos\alpha \\
+    \cos(\alpha\pm\beta) & = \cos\alpha\cos\beta \mp \sin\alpha\sin\beta \\
+    \tan(\alpha\pm\beta) 
+    & = \frac{\sin\alpha\cos\beta \pm \sin\beta\cos\alpha}{\cos\alpha\cos\beta \mp \sin\alpha\sin\beta} \\
+    & = \cfrac{\cfrac{\sin\alpha}{\cos\alpha} \pm \cfrac{\sin\beta}{\cos\beta}}{1 \mp \cfrac{\sin\alpha\sin\beta}{\cos\alpha\cos\beta}} \\
+    & = \frac{\tan\alpha \pm \tan\beta}{1 \mp \tan\alpha\tan\beta}
+\end{align*}
+
+\subsubsection{Double Angle Identities}
+
+Double angle identities are the more specific version of angle sum identities. The following identities are derived from the previous identities.
+
+For sine,
+\begin{align*}
+    \sin 2x & = 2 \sin x \cos x \\
+            & = \frac{2 \tan x}{1 + \tan^2 x}
+\end{align*}
+
+For cosine,
+\begin{align*}
+    \cos 2x & = \cos^2 x - \sin^2 x \\
+            & = \frac{1 - \tan^2 x}{1 + \tan^2 x} \\
+    \shortintertext{Moreover, there are, }
+            & = 2\cos^2 x - 1 \\
+            & = 1 - 2\sin^2 x \\
+\end{align*}
+
+For tangent, 
+\begin{align*}
+    \tan 2x & = \frac{2 \tan x}{1 - \tan^2 x}
+\end{align*}
+
+\subsubsection{Squared Identities}
+
+From the cosine double angle identities, the squared identities of sine and cosine can also be derived.
+\begin{align*}
+    \sin^2 x & = \frac{1 - \cos 2x}{2} \\
+    \cos^2 x & = \frac{\cos 2x + 1}{2} \\
+    \tan^2 x & = \frac{1 - \cos 2x}{1 + \cos2x} 
+\end{align*}
+
+\chapter{Limit}
+\section{Tangent}
+\section{Limit of Functions}
+\section{Limit Laws}
+
+\chapter{Derivative}
+\section{Rates of Change}
+\section{Derivative Basics}
+\section{Derivative Rules}
+\section{Derivatives of Functions}
+
+\subsection{Derivatives of Exponential Functions}
+
+The derivative of the exponential function $\exp x$ is $\exp x$. The derivative is identical to the original function. This can be proven by the \textit{First Principles}.
+
+Moreover, for exponential functions in form of $a^x$ where $a > 0$, the derivative will be $a^x \ln a$. This can be proven by
+\begin{align*}
+    \dv{x} a^x
+    & = \dv{x} e^{\ln a^x} \\
+    & = \dv{x} e^{x \ln a} \\
+    & = \dv{e^{x \ln a}}{x \ln a} \dv{x \ln a}{x} \\
+    & = e^{x \ln a} \ln a \\
+    & = a^x \ln a
+\end{align*}
+
+\subsection{Derivatives of Inverse Trigonometric Functions}
+
+\subsubsection{Inverse Sine}
+
+The derivative of inverse sine $\dv{x}\arcsin{x}$ is $\frac{1}{\sqrt{1 - x^2}}$.
+
+Let $y = \arcsin{x}$, $x \in [-1, 1]$, $y \in [-\frac{\pi}{2}, \frac{\pi}{2}]$, we have $x = \sin y$. By implicit differentiation,
+\begin{align*}
+  \dv{x}{x}        & = \dv{\sin y}{x}           \\
+  1                & = \dv{\sin y}{y} \dv{y}{x} \\
+  1                & = \cos y \dv{y}{x}         \\
+  \frac{1}{\cos y} & = \dv{y}{x}
+\end{align*}
+Recall that $\sin^2 x + \cos^2 x \equiv 1$,
+\begin{align*}
+  \dv{y}{x}
+    & = \frac{1}{\cos y}              \\
+  \shortintertext{since $y \in [-\frac{\pi}{2}, \frac{\pi}{2}]$, $\cos y \in [0, 1]$}
+    & = \frac{1}{\sqrt{\cos^2 y}}     \\
+    & = \frac{1}{\sqrt{1 - \sin^2 y}}
+  \shortintertext{since $x = \sin y$}
+    & = \frac{1}{\sqrt{1 - x^2}}
+\end{align*}
+
+\subsubsection{Inverse Cosine}
+
+The derivative of inverse cosine $\dv{x}\arccos{x}$ is $\frac{-1}{\sqrt{1 - x^2}}$.
+
+Let $y = \arccos x$,  $x \in [-1, 1]$, $y \in [0, \pi]$, we have $x = \cos y$. Similar to inverse sine,
+\begin{align*}
+  \dv{y}{x}
+    & = \frac{-1}{\sin y}              \\
+  \shortintertext{since $y \in [0, \pi]$, $\sin y \in [0, 1]$}
+    & = \frac{-1}{\sqrt{\sin^2 y}}     \\
+    & = \frac{-1}{\sqrt{1 - \cos^2 y}} \\
+  \shortintertext{since $x = \cos y$}
+    & = \frac{-1}{\sqrt{1 - x^2}}
+\end{align*}
+
+\subsubsection{Inverse Tangent}
+
+The derivative of inverse tangent $\dv{x}\arctan{x}$ is $\frac{1}{1 + x^2}$.
+
+Let $y = \arctan x$,  $x \in (-\infty, \infty)$, $y \in (-\frac{\pi}{2}, \frac{\pi}{2})$, we have $x = \tan y$. Similar to inverse sine and inverse cosine,
+\begin{align*}
+  \dv{y}{x}
+    & = \cos^2 y               \\
+  \shortintertext{since $\cos x \equiv \frac{1}{\sec x}$}
+    & = \frac{1}{\sec^2 y}     \\
+  \shortintertext{since $1 + \tan^2 x \equiv \sec^2 x$}
+    & = \frac{1}{1 + \tan^2 x} \\
+  \shortintertext{since $x = \tan y$}
+    & = \frac{1}{1 + x^2}
+\end{align*}
+
+\section{Linear Approximation}
+\section{Linear Differentials}
+\section{Minimum and Maximum Values}
+\section{Mean Value Theorem}
+
+\textit{Mean Value Theorem} (or \textit{Lagrange Theorem}) roughly states that given a arc with two endpoints, there must be at least one point on the arc at which the slope equals to the slope of the secant between the endpoints.
+
+That is, let $f$ be a function that is continuous on $[x, x + \Delta x]$ and differentiable on $(x, x + \Delta x)$, a $c$ that satisfies
+\begin{equation*}
+  f'(c) = \frac{f(x + \Delta x) - f(x)}{\Delta x}
+\end{equation*}
+must exist on the open interval $(x, x + \Delta x)$
+
+\section{L'Hopital's Rule}
+
+\textit{L'Hopital's Rule} helps calculate the limit that is \textit{indeterminate}.
+
+In symbols:
+\[
+  \lim_{x \to c} \frac{f(x)}{g(x)} = \lim_{x \to c} \frac{f'(x)}{g'(x)}
+\]
+if and only if
+\begin{itemize}
+  \item $\lim_{x \to c} \frac{f(x)}{g(x)}$ is indeterminate. i.e., $\lim_{x \to c} f(x) = \lim_{x \to c} g(x) = 0 \;\mathrm{or}\; \pm\infty$. If both the numerator and the denominator are infinite and they have different sign, the rule is still applicable.
+  \item $f(x)$ and $g(x)$ are differentiable near $c$ except possibly at $c$.
+  \item $g'(x) \neq 0$ for all $x$ near $c$ except possibly at $c$.
+  \item $\lim_{x \to c} \frac{f'(x)}{g'(x)}$ exists.
+\end{itemize}
+
+\subsection{Other Indeterminate Forms}
+
+\begin{warning}
+  The math equation under this section is not rigorous. It is for the intuitive idea.
+\end{warning}
+
+One simple approach to convert an indeterminate form to the indeterminate form that L'Hopital's rule can be applied is considering
+\[
+  \frac{1}{\infty} = 0
+\]
+We can eliminate some infinities by this approach.
+
+\subsubsection{Subtract Infinity from Infinity}
+
+The indeterminate form of $\infty - \infty$ can be reformed to $\frac{0}{0}$ by
+\begin{align*}
+  \infty_1 - \infty_2
+    & = \cfrac{\cfrac{\infty_1 - \infty_2}{\infty_1 \infty_2}}{\cfrac{1}{\infty_1 \infty_2}}                            \\
+    & = \cfrac{\cfrac{\infty_1}{\infty_1 \infty_2} - \cfrac{\infty_2}{\infty_1 \infty_2}}{\cfrac{1}{\infty_1 \infty_2}} \\
+    & = \cfrac{\cfrac{1}{\infty_2} - \cfrac{1}{\infty_1}}{\cfrac{1}{\infty_1 \infty_2}}                                 \\
+    & = \frac{0_2 - 0_1}{0_1 0_2}
+\end{align*}
+
+\subsubsection{Exponential Limits}
+
+Generally, the limit of the form of $0^0$, $1^\infty$ and $\infty^0$ can be reformed to $\exp \frac{0}{0}$ by
+\begin{align*}
+  0_1^{0_2} \quad\boldsymbol{(0_1 \to 0^+)}
+    & = \exp\ln 0_1^{0_2}                   \\
+    & = \exp0_2 \ln 0_1                     \\
+    & = \exp\cfrac{0_2}{\cfrac{1}{\ln 0_1}} \\
+    & = \exp\frac{0_2}{-0_1}
+\end{align*}
+\begin{align*}
+  1_1^{\infty_2}
+    & = \exp\ln 1_1^{\infty_2}                 \\
+    & = \exp\infty_2 \ln 1_1                   \\
+    & = \exp\frac{\ln 1_1}{\frac{1}{\infty_2}} \\
+    & = \exp\frac{0_1}{0_2}
+\end{align*}
+\begin{align*}
+  \infty_1^{0_2} \quad\boldsymbol{(\infty_1 \to +\infty)}
+    & = \exp\ln \infty_1^{0_2}                 \\
+    & = \exp0_2 \ln \infty_1                   \\
+    & = \exp\frac{0_2}{\frac{1}{\ln \infty_1}} \\
+    & = \exp\frac{0_2}{0_1}
+\end{align*}
+
+\section{Newton's Method}
+
+\textit{Newton's Method} is a iterative root-finding algorithm.
+\[
+  x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}
+\]
+where $f(x) = 0$ is the equation finding root, $x_n$ is the n-th approximation and $x_{n+1}$ is the n+1-th (next) approximation.
+
+The idea is start from an initial guess $x_0$, then to approximate a better $x_1$ value ($x_2, x_3, \cdots, x_n$) by computing the x-intersect of the tangent line at $x=x_0$. This new $x_1$ value is typically closer to the actual root.
+
+So, how do we compute the successive $x$ values? Consider a function $y=f(x)$, the y-coordinate of $x=x_0$ is $y=f(x_0)$. In order to obtain the tangent line equation, the slope $k$ at $x=x_0$ is needed, which can be computed by the derivative $k = f'(x_0)$. So that tangent line at $x = x_0$ will be
+\begin{align*}
+  y - y_0    & = k (x - x_0)       \\
+  y - f(x_0) & = f'(x_0) (x - x_0)
+\end{align*}
+In order to find the x-intersect, simply let $y = 0$
+\begin{align*}
+  0 - f(x_0)                   & = f'(x_0) (x - x_0)       \\
+  - f(x_0)                     & = f'(x_0) x - f'(x_0) x_0 \\
+  f'(x_0) x_0 - f(x_0)         & = f'(x_0) x               \\
+  x_0 - \frac{f(x_0)}{f'(x_0)} & = x
+\end{align*}
+Therefore, $x_0 - \frac{f(x_0)}{f'(x_0)}$ is the next x-value $x_1$. The successive x-values can be obtained similarly.
+
+\chapter{Anti-derivative}
+\section{Anti-derivative Basics}
+\section{Areas and Distances}
+\section{The Fundamental Theorem of Calculus}
+
+\textit{The Fundamental Theorem of Calculus} is a theorem that links \textit{differentiation} and \textit{integration} together. The theorem consist of two parts.
+
+\subsection{The First Part}
+
+Let $f$ be a continuous function on a closed interval $[a, b]$. Let $F$ be a function defined for all $x$ in $[a, b]$, defined by 
+\begin{equation*}
+    F(x) = \int_a^x f(x) \dd{x}
+\end{equation*}
+Then $F$ is uniformly continuous and differentiable, and 
+\begin{equation*}
+    \dv{x} F(x) = f(x)
+\end{equation*}
+
+\subsection{The Second Part}
+
+Based on the functions defined in the first part, 
+\begin{equation*}
+    \eval{F(x)}_a^b = F(b) - F(a) = \int_a^b f(x) \dd{x}
+\end{equation*}
+
+\section{Average Value of Functions}
+
+Average value of a function is intuitively defined by the area under the curve divided by the base of the area. That is
+\begin{equation*}
+    \mathrm{Average}\ f(x) = \frac{1}{b-a} \int_a^b f(x) \dd{x}
+\end{equation*}
+
+\section{Substitution Rule}
+\section{Riemann Sum}
+
+\textit{Riemann Sum} is a method to approximate definite integrals by summing. For example, 
+\begin{equation*}
+    \int_a^b f(x) \dd{x} \approx \sum^{n}_{i=1} f(x_i) \Delta x
+\end{equation*}
+where $\Delta x = \frac{b-a}{n}$; depending on which type of Riemann Sums is used, $x_i$ can be
+\begin{description}
+    \item[Left Riemann Sum] $x_i = x_i(i-1) \Delta x$
+    \item[Middle Riemann Sum] $x_i = (i+\frac{1}{2}) \Delta x$
+    \item[Right Riemann Sum] $x_i = i \Delta x$
+\end{description}
+
+As $n$ becoming larger, the approximation of Riemann Sum will be more accurate. As $n \to \infty$, the approximation precisely equals to the definite integral. 
+\begin{equation*}
+    \int_a^b f(x) \dd{x} = \lim_{n \to \infty} \sum^{n}_{i=1} f(x_i) \Delta x
+\end{equation*}
+
+\chapter{Review}
+
+\section{Main Theorems}
+
+\subsection{Intermediate Value Theorem}
+
+If $f$ is continuous on $[a, b]$, then there must be a value $c \in [a, b]$ such that $f(c) \in [f(a), f(b)]$.
+
+The main application of Intermediate Value Theorem is to locate the root of $f(x) = 0$.
+
+\subsection{Mean Value Theorem}
+
+If $f$ is differentiable on $[a, b]$, then there must be a value $c \in [a, b]$ such that the secant line between $(a, f(a))$ and $(b, f(b))$ is parallel to the tangent line at $(c, f(c))$.
+
+\subsection{Fundamental Theorems of Calculus}
+
+\subsubsection{Part I}
+
+\begin{equation*}
+    \left(\int_{a}^{u(x)} f(t) \dd{t}\right)' = f(u(x)) u'(x) 
+\end{equation*}
+
+\subsubsection{Part II}
+
+\begin{equation*}
+    \int_a^b f(t) \dd t = \eval{F(x)}_a^b
+\end{equation*}
+
+\section{Tests}
+
+\subsection{Increase / Decrease Test}
+
+\subsection{Concavity Test}
+
+\subsection{Local Maximum / Minimum Test}
+
+\subsubsection{First Derivative Test}
+\subsubsection{Second Derivative Test}
+
+\subsection{First derivative Test for the Absolute Maximum / Minimum}
+
+\begin{note}
+    Memorize the derivative of arcsin, arccos and arctan!
+\end{note}
+
+
+
+\end{document}

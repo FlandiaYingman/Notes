@@ -1,0 +1,355 @@
+\documentclass{note}
+
+\title{Physics Notes}
+\author{LI, Yu Hong Harry}
+
+\begin{document}
+\maketitle
+
+\chapter{Work and Kinetic Energy}
+
+The concepts of \textit{Work and Energy} is introduced because of the problem of varying force. Furthermore, the reason that work and energy are chosen is that they obey \textit{the principle of energy conservation}.
+
+\chapter{Wave}
+
+A \textit{wave} is an \textit{oscillation} that transfers energy to the direction of wave propagation. A \textit{mechanical wave} only transfers energy but not mass.
+
+\paragraph{Transverse Wave} is a wave whose local mass motion is perpendicular to the direction of wave propagation.
+
+\paragraph{Longitudinal Wave} is a wave whose local mass motion is parallel to the direction of wave propagation.
+
+\section{Wave Function}
+
+Wave function \(y = f(x, t)\) describes the displacement \(y\) from the equilibrium position at a certain position \(x\) and a certain time \(t\).
+
+The wave function of an arbitrary sinusoidal wave is
+\[
+  y = A \cos(k x - \omega t)
+\]
+where \(k\) is the \textit{wave number}, defined by
+\[
+  k = \frac{2\pi}{\lambda} \quad \mathbf{(rad/m)}
+\]
+and \(\omega\) is the \textit{angular frequency}, defined by
+\[
+  \omega = 2\pi f = \frac{2\pi}{T} \quad \mathbf{(rad/s)}
+\]
+Combining the wave number and the angular frequency,
+\[
+  v = f \lambda = \frac{\omega}{k}
+\]
+
+\section{Wave Equation}
+
+In a transverse wave, consider a tiny segment \(\Delta x\) of the string. Since the tiny segment has neither horizontal displacement, velocity nor acceleration, the net horizontal force \(F_x = 0\). Since the tiny segment may have vertical displacement, velocity or acceleration, the net vertical force \(F_y\) does not always equal to \(0\).
+
+Let \(x\) and \(x + \Delta x\) be the two endpoints of the segment. By the decomposition of force, consider the vertical forces \(F_{y}(x)\) and \(F_{y}(x+\Delta x)\),
+\begin{align*}
+  F_y(x)            & = \pm F_x \eval{\dv{y}{x}}_x              \\
+  F_y(x + \Delta x) & = \pm F_x \eval{\dv{y}{x}}_{x + \Delta x}
+\end{align*}
+Since \(F_y(x)\) and \(F_y(x + \Delta x)\) are always in different direction, their symbols are always opposite. Let \(F_y(x + \Delta x)\) be positive and \(F_y(x)\) be negative, so that the following steps will be simpler.
+
+The net force in y-direction
+\begin{align*}
+  F_y
+    & = F_y(x) + F_y(x + \Delta x)                                  \\
+    & = F_x \left(\dv{y}{x}\/(x + \Delta x) - \dv{y}{x}\/(x)\right)
+\end{align*}
+and since
+\begin{align*}
+  F_y
+    & = ma_y                      \\
+    & = \Delta x \mu \dv[2]{y}{t}
+\end{align*}
+therefore
+\begin{align*}
+  F_x \left(\dv{y}{x}\/(x + \Delta x) - \dv{y}{x}\/(x)\right)                & = \Delta x \mu \dv[2]{y}{t}    \\
+  \frac{1}{\Delta x} \left(\dv{y}{x}\/(x + \Delta x) - \dv{y}{x}\/(x)\right) & = \frac{\mu}{F_x} \dv[2]{y}{t} \\
+  \dv[2]{y}{x}                                                               & = \frac{\mu}{F_x} \dv[2]{y}{t}
+\end{align*}
+
+By substituting the wave function \(y = A \cos(k x - \omega t)\), the (partial, since wave function is a multi-variable function) derivatives become
+\begin{align*}
+  \pdv[2]{y}{x} & = -k^2 A \cos(k x - \omega t) \\
+  \pdv[2]{y}{t} & = -\omega^2 A \cos(k x - \omega t)
+\end{align*}
+and the wave equation become
+\begin{align*}
+      -k^2 A \cos(k x - \omega t) & = \frac{\mu}{F_x} (-\omega^2 A \cos(k x - \omega t)) \\
+      k^2 & = \frac{\mu}{F_x} \omega^2 \\
+      \frac{1}{v^2} & = \frac{\mu}{F_x} \\
+      v & = \sqrt{\frac{F_x}{\mu}} \\
+\end{align*}
+
+By applying back the second last equation, the wave equation can also be rewritten as
+\[
+\dv[2]{y}{x} = \frac{1}{v^2} \dv[2]{y}{t}
+\]
+
+\section{Power Propagation}
+
+The intensity of power is
+\[
+  I = \frac{P}{4 \pi r^2}
+\]
+
+\section{Reflection}
+
+The incident wave
+\[
+  y(x, y) = A\cos(kx-\omega t)
+\]
+
+Open boundary condition
+\[
+  y(x, y) = +A\cos(kx+\omega t)
+\]
+
+The fixed boundary condition
+\[
+  y(x, y) = -A\cos(kx+\omega t)
+\]
+
+\section{Standing Wave}
+
+The standing wave is a superposition of 2 identical waves traveling in opposite directions.
+Reflection is a way to generate a wave traveling in the opposite direction.
+\begin{align*}
+  y(x, t)
+    & = A\cos(kx-\omega t) + A\cos(kx+\omega t) \\
+    & = 2A\cos(kx)cos(\omega t)
+\end{align*}
+or
+\begin{align*}
+  y(x, t)
+    & = A\cos(kx-\omega t) - A\cos(kx+\omega t) \\
+    & = 2A\sin(kx)sin(\omega t)
+\end{align*}
+Therefore, there is also no wave propagation and power propagation because \(kx-\omega t\) doesn't appear!
+
+\subsection{Node \& Antinode}
+
+A \textit{node} (N) is where the wave has zero amplitude due to
+\[
+  \cos(kx) = 0
+\]
+This is called destructive interference.
+
+An \textit{antinode} (A) is where the wave achieves maximum amplitude due to
+\[
+  \cos(kx) = 1
+\]
+This is called constructive interference.
+
+The allowed normal mode wavelength can be
+\[
+  L = n\frac{\lambda}{2}
+\]
+or
+\[
+  \lambda = \frac{2L}{n}
+\]
+and the normal mode frequencies are
+\[
+  f_n = n\frac{v}{2L} = nf_1
+\]
+
+
+\section{Beats}
+
+Beats are interference of waves traveling in the same direction with different frequencies.
+
+\[
+  y_a + y_b = 2A\cos(-2\pi \frac{f_a + f_b}{2}t) \cos(-2\pi \frac{f_a - f_b}{2}t)
+\]
+
+There are two beats per period, since there are two frequencies
+\begin{align*}
+  f  & = \frac{f_a + f_b}{2}   \\
+  f' & = \frac{|f_a - f_b|}{2}
+\end{align*}
+
+\section{Doppler Effect}
+
+The Doppler effect causes the frequency of a traveling wave to change when the source and / or observer are moving.
+\begin{align*}
+  f_L
+    & = \frac{v + v_L}{\lambda} \\
+    & = (1 + \frac{v_L}{v})f_s
+\end{align*}
+
+Considering there is a relative velocity \(v_s\)
+\begin{align*}
+  \lambda = \frac{v \pm v_s}{f_s}
+\end{align*}
+
+\chapter{Thermodynamics}
+
+\textit{Thermodynamics} is the branch of physics concerned with \textit{heat} and \textit{temperature} and their relation to \textit{energy} and \textit{work}.
+
+The behaviour of these quantities is governed by the \textit{Four Laws of Thermodynamics}. The laws are explained in terms of microscopic constituents by \textit{Statistical Mechanics}.
+
+\section{Temperature \& Heat}
+
+\paragraph{Temperature} is briefly a measure of hotness or coldness. Moreover, it is a measure of tendency for an object to spontaneously give up its internal energy to its surroundings. An object with high temperature tend to give more energy to its surroundings; an object with lower temperature tend to give less energy to its surroundings.
+
+\begin{tip}
+    A definition of \textit{temperature} will be given in later sections.
+\end{tip}
+
+\paragraph{Thermal Equilibrium} is the state if the interaction between the objects in system causes no further change in the system. Systems are in thermal equilibrium if and only if they have the \textbf{same temperature}.
+
+\paragraph{The 0-th Law of Thermodynamics} states that, if $C$ is initially in thermal equilibrium with both $A$ and $B$, then $A$ and $B$ are also in thermal equilibrium with each other.
+
+That is, $\qty{0}{K} = \qty{273.15}{\degreeCelsius}$
+
+\[
+  \frac{1}{T} = \dv{S}{U}
+\]
+
+\paragraph{Celsius}
+The freezing and boiling points of water at \(1 \;\text{atm}\) are \(0 \;\celsius\)
+
+\paragraph{Kelvin}
+
+\paragraph{Constant Volume gas Thermometer}
+
+Recall the ideal gas law
+\[
+  pV = nRT
+\]
+\[
+  p \propto T
+\]
+
+\[
+  T = T_\text{triple}\frac{p}{p_\text{triple}}
+\]
+
+\section{The 0-th Law of Thermodynamics}
+
+
+\section{Thermal Expansion}
+
+\[
+  \frac{\Delta L}{L} = \alpha \Delta T
+\]
+That is, the fractional change in the length \(\frac{\Delta L}{L}\) is proportional to the temperature change \(\Delta T\).
+
+\[
+  \frac{\Delta V}{V} = \beta \Delta T
+\]
+
+\begin{align*}
+  V = L^3
+  \dd{V} = 3L^2 \dd{L}
+  \beta = \frac{1}{\Delta T}\dv{}{}
+\end{align*}
+
+\section{Heat}
+
+\textit{Heat} is energy transferred from on body to another body due to temperature difference. How do we quantify heat?
+
+\paragraph{Heat Capacity} is the relation ship between the head and the temperature change, without changing the form.
+
+\paragraph{Latent Heat} is the amount of heat needed to convert a unit mass of substance from one phase to another. This change of phase occurs without temperature change.
+
+\section{Thermal Properties}
+
+\paragraph{State Variables} is the state of matter in terms of macroscopic quantities, such as pressure \(p\), volume \(V\), quantity \(n\) or \(N\), temperature \(T\).
+
+\subsection{Ideal Gas}
+
+Experiments have shown that the ideal gases with the same quantity $\frac{pV}{n}$ have the same temperature $T$. Therefore, the simplest choice will be
+\begin{equation*}
+    \frac{pV}{n} \propto T
+\end{equation*}
+
+By introduce a constant $R$, the equation becomes
+\begin{equation*}
+    pV = nRT
+\end{equation*}
+
+\paragraph{Equation of State}
+
+\paragraph{State Function}
+
+\section{Heat Capacity of an Ideal Gas}
+
+\chapter{The 1-th Law of Thermodynamics}
+
+\paragraph{Thermodynamic Process} changes the state of a thermodynamic system, defined by state variables, from the initial state to the final state along a sequence of intermediate states called the path.
+
+The change of a state function depends and only depends on the initial and final values of the state variables. If and only if a quantity depends on the path, it's a state function.
+
+\paragraph{Thermodynamic System} is one that may exchange energy with the environment, in form of work done by the system and/or heat added to the system. The sign conventions are:
+\begin{itemize}
+  \item \(Q > 0\) if heat added to the system.
+  \item \(Q < 0\) if heat subtracted from the system.
+  \item \(W > 0\)
+  \item \(W < 0\)
+\end{itemize}
+
+The first law of thermodynamics is a statement about the conservation of energy.
+\begin{align*}
+  Q      & = \Delta U + W    \\
+  \dd{Q} & = \dd{U} + \dd{W}
+\end{align*}
+
+\section{Work Done by Ideal Gas: Path Dependence}
+
+\[
+  W = \int_{V}^{V'} p\dd{V}
+\]
+
+If the pressure is constant (isobaric)
+\[
+  W = \int_{V}^{V'} p\dd{V} = p(V'-V)C
+\]
+
+A constant temperature (isothermal)
+\begin{align*}
+  W & = \int_{V}^{V'} p\dd{V} = \int_{V}^{V'} \frac{nRT}{V}\dd{V} \\
+    & = nRT\ln\frac{V'}{V}                                        \\
+    & = nRT\ln\frac{p'}{p}
+\end{align*}
+
+Internal Energy: State Function
+
+
+\section{Heat Added to a Gas: Path Dependence}
+
+\chapter{First Law of Thermodynamics II}
+
+\paragraph{Isochoric} means that through this process, the volume change $\Delta V$ is zero.
+
+\paragraph{Isobaric} means that the pressure change $\Delta p$ is zero.
+
+\paragraph{} means that the heat change is zero.
+
+\section{Adiabatic Process} 
+An adiabatic process is one in which there is no workflow, $Q = 0$. This may happen if: 
+\begin{itemize}
+    \item The system is thermally isolated so that heat cannot either enter or leave.
+    \item The process takes place quickly compared to the rate of heat flow, so that the process is finished before heat has time enough to enter or leave the system.
+\end{itemize}
+
+\paragraph{Adiabatic Compression}
+\(Q = 0\) and \(W = p\Delta V < 0\), \(\Delta U = Q - W > 0\)
+
+\paragraph{Ad8iabatic Expansion}
+\(Q = 0\) and \(W = p\Delta V > 0\), \(\Delta U = Q - W < 0\)
+
+\chapter{Second Law of Thermodynamics}
+
+\section{Reversible \& Irreversible Process}
+
+Reversible process is a thermodynamic process that the direction can be reversed by making infinitesimal change in condition. Throughout the process, the system is infinitesimally close to equilibrium.
+
+\section{Carnot Cycle}
+
+\section{Absolute Temperature}
+
+
+\end{document}

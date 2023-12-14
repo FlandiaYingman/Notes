@@ -1,0 +1,1206 @@
+\documentclass{note}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\title{./COMP2211 -\/-help}
+\author{Y. H. Harry Li}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\pagebreak
+
+\chapter{Introductory Algorithms}
+
+\section{Naive Bayes Classifier}
+
+\subsection{Bayes' Rule (Single Belief \& Evidence)}
+
+Given the following arguments,
+\begin{itemize}
+    \item \textit{Belief} $B$ (Also called \textit{Class} or \textit{Label})
+    \item \textit{Evidence} $E$ (Also called \textit{Feature})
+    \item \textit{Prior Probability} $P(B)$
+    \item \textit{Marginal Probability} $P(E)$
+    \item \textit{Likelihood} $P(E|B)$
+\end{itemize}
+The posterior probability $P(B|E)$ can be calculated by
+$$
+P(B|E) = \frac{P(E|B)P(B)}{P(E)}
+$$
+and by \textit{law of total probability}, i.e. $P(E) = P(E|B)P(B) + P(E|B')P(B')$, the equation becomes
+$$
+P(B|E) = \frac{P(E|B)P(B)}{P(E|B)P(B) + P(E|B')P(B')}
+$$
+This is done because sometimes the samples of marginal probability are small. This provides more accurate marginal probabilities than simply counting their frequencies.
+
+\begin{tip}
+There's another form of Bayes' Rule, which is
+$$
+P(B|E)P(E) = P(E|B)P(B)
+$$
+\end{tip}
+
+\subsection{Bayes' Rule (Multiple Belief \& Evidence)}
+
+\subsubsection{Multiple Beliefs}
+
+Given mutually exclusive beliefs $B_i \in B$, by simply substituting $B$ to $B_i$,
+$$
+P(B_i|E) = \frac{P(E|B_i)P(B_i)}{P(E)}
+$$
+and by law of total probability, i.e., $P(E) = \sum_{B_i \in B} \left(P(E|B_i)P(B_i)\right)$,
+\begin{align*}
+P(B_i|E) 
+& = \frac{P(E|B_i)P(B_i)}{\sum_{B_i \in B} \left(P(E|B_i)P(B_i)\right)} \\
+& = \frac{P(E|B_i)P(B_i)}{P(E|B_0)P(B_0) + P(E|B_1)P(B_1) + \cdots + P(E|B_n)P(B_n)}
+\end{align*}
+
+\subsubsection{Multiple Evidences}
+
+Given multiple evidences $E_i \in E$, considering a single evidence representing the intersection of all evidences, $E = \bigcap E_i$, by substitution, 
+$$
+P(B|\bigcap E_i) = \frac{P(\bigcap E_i|B)P(B)}{P(\bigcap E_i)}
+$$
+and by law of total probability, $P(\bigcap E_i) = P(\bigcap E_i|B)P(B) + P(\bigcap E_i|B')P(B')$,
+$$
+P(B|\bigcap E_i) = \frac{P(\bigcap E_i|B)P(B)}{P(\bigcap E_i|B)P(B) + P(\bigcap E_i|B')P(B')}
+$$
+
+\subsubsection{Multiple Beliefs \& Evidences}
+
+We have discussed the case of multiple beliefs and multiple evidences. There is no conflict to combine multiple beliefs and multiple evidences. Therefore, it is trivial that for each beliefs $B_i \in B$ and each evidences $E_i \in E$,
+\begin{align*}
+P(B_i|\bigcap E_i) 
+& = \frac{P(\bigcap E_i|B_i)P(B_i)}{\sum_{B_i \in B} \left(P(\bigcap E_i|B_i)P(B_i)\right)} \\
+& = \frac{P(\bigcap E_i|B_i)P(B_i)}{P(\bigcap E_i|B_0)P(B_0) + P(\bigcap E_i|B_1)P(B_1) + \cdots + P(\bigcap E_i|B_n)P(B_n)} \\
+\end{align*}
+
+\subsection{The 'Naive' Assumption}
+
+The word "naive" in Naive Bayes Classifier stands for a strong but naive assumption. It is said that \textbf{all features are independent and contribute to the belief equally}. It is naive because the assumption isn't true for most of  the practical cases, however, it usually works very well in practice.
+
+By taking this assumption, the likelihood formula $P(\bigcap E_i | B) = \prod_{E_i \in E} P(E_i|B)$ is derived, and therefore
+\begin{align*}
+    P(B_i|\bigcap E_i) 
+    & = \frac
+    {\left(\prod_{E_i \in E} P(E_i|B_i)\right)P(B_i)}
+    {\sum_{B_i \in B}\left(\left(\prod_{E_i \in E} P( E_i|B_i)\right)P(B_i)\right)}
+\end{align*}
+
+It is equivalent to 
+\begin{equation*}
+    \frac
+    {P(E_0|B_i) P(E_1|B_i) \cdots P(E_n|B_i) P(B_i)}
+    {\sum_{B_i \in B}\left(P(E_0|B_i) P(E_1|B_i) \cdots P(E_n|B_i) P(B_i)\right)}
+\end{equation*}
+or
+\begin{equation*}
+    \frac
+    {\left(\prod_{E_i \in E} P(E_i|B_i)\right)P(B_i)}
+    {\left(\prod_{E_i \in E} P(E_i|B_0)\right)P(B_0) + \left(\prod_{E_i \in E} P(E_i|B_1)\right)P(B_1) + \cdots + \left(\prod_{E_i \in E} P(E_i|B_n)\right)P(B_n)}
+\end{equation*}
+
+The reason we take this assumption is that, sometimes the samples that satisfy $\bigcap E_i$ are small and therefore simply counting the frequencies can be inaccurate. By adopting the assumption, the likelihood is usually more accurate given the samples are relatively small.
+
+\subsection{Naive Bayes Classifier}
+
+Based on Bayes' Rule and the "naive" assumption we've made, given $P(B_i)$ and $P(E_i|B_i)$, it's easy to find $P(B_i|\bigcap E_i)$. Once all $P(B_i|\bigcap E_i)$ are found, we compare all $P(B_i|\bigcap E_i)$, and select the $B_i$ where its $P(B_i|\bigcap E_i)$ is maximized. That is
+$$
+B_\text{target} = \arg\max_{B_i \in B} P(B_i|\bigcap E_i)
+$$
+
+Noting that the denominator is identical for all beliefs. Therefore, 
+\begin{align*}
+    B_\text{target} 
+    &= \arg\max_{B_i \in B} P(B_i|\bigcap E_i) = \arg\max_{B_i} \frac{\left(\prod_{E_i \in E} P(E_i|B_i)\right)P(B_i)}{\sum_{B_i \in B}\left(\left(\prod_{E_i \in E} P( E_i|B_i)\right)P(B_i)\right)} \\
+    &= \arg\max_{BB_i \in B} \left(\prod_{E_i \in E} P(E_i|B_i)\right)P(B_i)
+\end{align*}
+
+\subsubsection{Discrete Features / Classes}
+
+As aforementioned, the only parameters needed are $P(E|B)$ and $P(B)$. For discrete features, it's easy: simply count the frequencies. 
+$$
+P(B) = \frac{n(B)}{N}
+$$
+$$
+P(E|B) = \frac{n(E|B)}{n(B)}
+$$
+where $n$ denotes number of occurrences and $N$ denotes the total samples.
+
+\begin{important}
+    It is possible that one of $n(E|B) = 0$, so that $P(E|B) = 0$ and therefore $P(B|E) = 0$ according to Bayes' Rule ($0$ times anything is $0$)! That is called \textit{Zero Frequency Problem}. 
+
+    \textit{Smoothing} is a way to solve the problem. A often adopted smoothing method is \textit{additive smoothing (or Laplace smoothing)}. That is, 
+    \begin{equation*}
+        P(E|B) = \frac{n(E|B) + \alpha}{n(B) + \alpha \times d(E)}
+    \end{equation*}
+    where $\alpha$ is a smoothing parameter called \textit{pseudo-count} (if $\alpha = 1$, this approach is often called \textit{add-one smoothing} or \textit{add-one trick}) and $d(E)$ is the dimension of $E$, i.e., the count of possible values of $E$.
+
+    Smoothing is only adopted for evidences that yields $n(E|B) = 0$. There is no need to adopt smoothing to all frequencies if $0$ only appears in one evidence. 
+\end{important}
+
+\subsubsection{Continuous Features / Classes}
+
+If features are continuous, we cannot directly compute $P(E|B)$ and $P(B)$. Instead, we have to make another assumption -- assume that the features or classes follow certain distribution.
+
+A relatively common distribution is Gaussian distribution. Its probability density function (PDF) $f(x)$ is 
+$$
+f(x) = \frac {1}{\sigma {\sqrt {2\pi }}} \exp(-{\frac {1}{2}}(\frac {x-\mu }{\sigma })^{2})
+$$
+where $x$ is the test data, $\mu$ is the mean of the training data and $\sigma$ is the standard deviation of the training data. Plug in all data that matches $E|B$ or $B$ will do.
+
+By computing the mean values and standard deviation values for each features and classes, we are able to compute the required prior probabilities and likelihoods in an indirect way. 
+
+
+\section{K-Nearest Neighbor (KNN)}
+
+\paragraph{Features of KNN}
+
+\begin{itemize}
+    \item \textit{Lazy}, as it does no pre-computation.
+    \item \textit{Non-parametric}, as it does no assumptions on the data.
+\end{itemize}
+
+\paragraph{Instructions of KNN}
+
+\begin{enumerate}
+    \item Prepare and pre-process the training data and test data.
+    \item Select a value of $k$; choose a distance metric.
+    \item Compute the pair-wise distance between the training data and the test data.
+    \item Take the k-nearest training data for each test data.
+    \item Predict the test data based on the taken k-nearest training data.
+\end{enumerate}
+
+\subsection{Normalization \& Standardization}
+\label{sec:normalization_and_standarization}
+
+Since the features are often in different units of measurement, we often \textit{normalize} the features in order to make features comparable. A often used normalization approach is \textit{standardization}, by computing the \textit{z-score} for the features, 
+$$
+z = \frac{x - \mu}{\sigma}
+$$
+where $x$ is the input, $\mu$ is the mean value and $\sigma$ is the standard deviation. By replacing each feature by its corresponding z-score, we are able to treat each features the same during distance calculation.
+
+\subsection{Metric (Distance Function)}
+\label{sec:metric}
+
+\subsubsection{L1 Norm (Manhattan Distance)}
+
+Define the $L_n$ norm by, 
+$$
+||\vec{x}||_n = (\sum |x^n|)^{1/n}
+$$
+Manhattan distance ($L_1$ norm) between $\vec{a}$ and $\vec{b}$ is just simply
+$$
+||\vec{a} - \vec{b}||_1 = \sum |a - b|
+$$
+
+\subsubsection{L2 Norm (Euclidean Distance)}
+
+By definition of $L_2$ norm, Euclidean distance is simply
+$$
+||\vec{a} - \vec{b}||_2 = \sqrt{\sum |a - b|^2} = \sqrt{\sum(a - b)^2}
+$$
+
+\subsubsection{Cosine Distance}
+
+The cosine distance is
+$$
+\text{distance}(\vec{a}, \vec{b}) = 1 - \cos\theta
+$$
+where $\theta$ is the angle between two vectors. By $\vec{a} \cdot \vec{b} = |\vec{a}||\vec{b}|\cos\theta$, the cosine distance is also
+
+$$
+\text{distance}(\vec{a}, \vec{b}) = 1 - \frac{\vec{a} \cdot \vec{b}}{|\vec{a}||\vec{b}|}
+$$
+
+\subsubsection{Hamming Distance}
+
+Hamming distance can be interpret as a special case of Manhattan distance. Hamming distance requires the input data to be binary strings. We can calculate Manhattan distances for two n-dimension vectors consist of 0s and 1s to simulate Hamming distance for two binary string in n-length.  
+
+\subsection{K-Value}
+
+\paragraph{Outlier}
+
+Relatively speaking, lower k-value is more sensitive to outliers and higher k-value is more resilient to outliers.
+
+\paragraph{Computation Costs}
+
+Obviously, a larger k-value costs more computational time. 
+
+\paragraph{Breaking Tie -- Decrease by 1}
+
+If the k-nearest neighbors consist of n-classes, and the largest two or more classes are in the same size. It is not determinable which class does the test data belong to. In such case, $k$ is decreased by 1 until the tie is broken.
+
+\paragraph{Breaking Tie -- Weighted Neighbors}
+
+The problem is also solvable by putting more weights on nearer neighbors, less wights on farther neighbors.
+
+\paragraph{Choosing K -- Rule of Thumb}
+
+Let $k = \sqrt{N}$, where $N$ is the number of training data.
+
+\subsection{Cross Validation}
+
+How do we find a appropriate value of $k$? A simple method is to try out different $k$s, and choose the $k$ whose error is the smallest. But, how do we design an \textit{adequate} and \textit{fair} test? The test must be adequate, which means all samples must be tested, and all samples must be used as training and test data respectively. The test must be fair, which means all $k$ values will take the same training and test data.
+
+We use the method called \textit{k-fold cross validation} to test out whether a $k$ value is appropriate.
+
+\subsubsection{K-Fold Cross Validation}
+
+The idea of k-fold cross validation is to split the whole data set into k folds, of approximately equal size. Each fold is selected as \textit{validation set} once, and all the remaining folds is used for training the model. By applying this approach, we get $k$ different data sets from a single data set. Although data in the data sets are the same, their role are different. 
+
+After splitting the data set into k-folds, we train and test the model with one specific $k$ for all folds, and calculate the average error, to measure how good our $k$ value is.
+
+\subsubsection{Error Function (Regression Problems)}
+
+There are many error functions. For regression problems, given actual labels $a_i$ and predicted labels $p_i$, the common error functions are: 
+
+\paragraph{Mean Absolute Error (MAE)}
+$$
+\text{MAE} = \frac{\sum |a_i - p_i|}{m}
+$$
+
+\paragraph{Mean Absolute Percentage Error (MAPE)}
+$$
+\text{MAPE} = \frac{\sum \frac{a_i - p_i}{a_i}}{m}
+$$
+
+\paragraph{Mean Square Error (MAE)}
+$$
+\text{MSE} = \frac{\sum (a_i - p_i)^2}{m}
+$$
+
+\subsubsection{Error Function (Classification Problems)}
+
+A common error function is the complement of $F_1$ score. $F_1$ score is determined by considering the following cases of prediction: 
+\begin{itemize}
+    \item \textit{True Positive} (TP)
+    \item \textit{True Negative} (TN)
+    \item \textit{False Positive} (FP)
+    \item \textit{False Negative} (FN)
+\end{itemize}
+Here, the terms \textbf{true} and \textbf{false} mean the accuracy of the prediction -- whether the prediction is "correct" or "incorrect", while the terms \textbf{positive} and \textbf{negative} mean the output of the prediction -- whether the prediction says "yes" or "no".
+
+By consider these cases, $F_1$ score is calculated by
+$$
+F_1 = \frac{2\text{TP}}{2\text{TP} + \text{FP} + \text{FN}}
+$$
+
+Since the "$F_1$ error function" is the complement of $F_1$ score -- $F_1$ score is a measurement of accuracy -- the actual error function is 
+\begin{align*}
+    \text{Error} 
+    &= 1 - F_1 \\
+    &= 1 - \frac{2\text{TP}}{2\text{TP} + \text{FP} + \text{FN}}
+\end{align*}
+
+\begin{note}
+    $F_1$ score is better than accuracy in some scenarios. For example, if the data set is unbalanced, and because $F_1$ score doesn't count true negatives, accuracy is biased but $F_1$ score will handle it well. 
+\end{note}
+
+\subsection{Further: Speed Up}
+
+Although KNN is relatively slow, there are ways to improve it. We can
+\begin{itemize}
+    \item Reduce the dimension of data set. (e.g., \textit{Principle-Component Analysis})
+    \item Use data structures to store the data. (e.g., \textit{KD-Tree})
+    \item Compute the distances in parallel.
+\end{itemize}
+
+\section{K-Means Clustering}
+
+K-means clustering is an \textit{unsupervised} learning algorithm that clusters data into k non-overlapping clusters that are similar to the data in the same cluster and dissimilar to the data in different clusters.
+
+\paragraph{What is \textit{clustering}?}
+Clustering means that, grouping things into "natural" categories when no label is available.
+
+\paragraph{Why \textit{clustering}?}
+Because sometimes labelling a large data set is costly.
+
+\subsection{Instruction}
+
+Let vectors $\Vec{x_i}$ be data in the data set.
+
+\begin{enumerate}
+    \item Generate $k$ random vectors to be the initial \textit{centroids} $\vec{c_i}$.
+    \item Calculate the distances between the centroids $\vec{c_i}$ and all vectors $\vec{x_i}$ in the data set.
+    \item For each data vector $\vec{x_i}$, assign it to the nearest centroid $\vec{c_i}$.
+    \item For each centroid $\vec{c_i}$, update its position to be average of the data vectors $\vec{x_i}$ assigned to it.
+    \item If a certain \textit{convergence criterion} is \textbf{not} met, go to step 2 and repeat the steps.
+\end{enumerate}
+
+\subsection{Stopping Criteria}
+
+There are several different criteria to determine whether to stop the iteration: 
+\begin{itemize}
+    \item No / Minimum re-assignments of data to different clusters.
+    \item No / Minimum change of centroids.
+    \item Minimum change in the \textit{sum of squared error} (SSE).
+\end{itemize}
+
+\subsubsection{Clustering Quality Measurement}
+
+In general, a high quality clustering should be
+\begin{itemize}
+    \item \textit{Isolate}. That is, the \textit{inter-clusters distance} -- distance between clusters -- should be maximized.
+    \item \textit{Compact}. That is, the \textit{intra-clusters distance} -- distance between data in the same cluster -- should be minimized. 
+\end{itemize}
+
+\subsubsection{Sum of Squared Error}
+
+Sum of squared error (SSE) is used for measuring the precision of data. SSE can be calculated by
+$$
+\text{SSE} = \sum_{c_i \in c} \sum_{x_j \in c_i} \text{dist}(c_i, x_j)
+$$
+Where $c$ in the set of centroids, $c_i$ and $x_j$ are respectively a certain centroid and the data vectors assigned to the centroid. That is, sum up the pair-wise distances for each centroid and all its assigned data vectors.
+
+\subsection{Further: Miscellaneous}
+
+\subsubsection{Choosing K}
+
+Some common methods are used to choose an appropriate $k$ value.
+\begin{itemize}
+    \item Elbow Method
+    \item Silhouette Method
+\end{itemize}
+
+\subsubsection{Normalization \& Standardization}
+
+If the data is in different units of measurement, normalization or standardization are also adopted just as previously discussed in section \ref{sec:normalization_and_standarization}.
+
+\subsubsection{Metric (Distance Function)}
+
+In short, the metric used \textbf{depends} on the data. The metrics discussed previously in section \ref{sec:metric} are also suitable.
+
+\subsubsection{Advantages of K-Means Clustering}
+
+\begin{itemize}
+    \item Easy to implement (relatively).
+    \item Efficient (given that $k$ and iterations are small).
+\end{itemize}
+
+\subsubsection{Disadvantages of K-Means Clustering}
+
+\begin{itemize}
+    \item Applicable only if mean is defined.
+    \item Applicable only if target clusters are \textit{(hyper-)ellipsoids}.
+    \item $k$ is manually specified.
+    \item Sensitive to outliers.
+    \item Sensitive to initial centroids.
+\end{itemize}
+
+\paragraph{How to deal with outliers?}
+\begin{itemize}
+    \item Remove the data that are much farther from the centroids. To be safe, this should be adopted after a few iterations.
+    \item Perform sampling to choose a subset of the data set. Outliers have less chance to be chosen.
+\end{itemize}
+
+\subsubsection{Dimension Reduction}
+
+Principal Component Analysis (PCA) is one method for dimensionality reduction. The main idea of PCA is to reduce the dimensionality of a data set consisting of many variables correlated with each other, while retaining the variation present in the data set, up to the maximum extent.
+
+It is a common practice to apply PCA before K-Means clustering is performed and it is believed that it improves the clustering results in practice (noise reduction).
+
+\subsubsection{K-Mode Clustering}
+
+Since mean is not defined for categorical data, the \textit{mode}, instead of mean, is used for clustering such data set.
+
+\chapter{Artificial Neural Network}
+
+\section{Perceptron}
+
+Perceptron is the simplest biological neuron model in the Artificial Neural Network (ANN). Perceptron is an algorithm for supervised learning of binary classifier. Is was invented in 1957 by Frank Rosenblatt.
+
+A perceptron is relatively easy. Its parameters are also easy, which are the \textit{weight} vector $\vec{w}$ and the \textit{bias} scalar $\theta$. Given the input vector $x$, to calculate the output $y$, 
+$$
+y = f(\vec{w} \cdot \vec{x} + \theta)
+$$
+where $f$ is called \textit{activation function}.
+
+In perceptron, the activation function chosen is the Heaviside step function $H$, which is defined as
+$$
+H(x) := 
+\begin{cases} 
+0 , &x \leq 0  \\
+1 , &x > 0 \\
+\end{cases}
+$$
+Therefore, it is obvious that the value of $y$ can only be $0$ or $1$.
+
+\subsection{Learning}
+
+Given that the output $O$ and the target $T$. If $T=O$, $\vec{w}$ and $\theta$ are not updated. Otherwise, $\vec{w}$ and $\theta$ are updated by the following
+\begin{align*}    
+w_i &\leftarrow w_i + \eta(T - O)x_i \\
+\theta &\leftarrow \theta + \eta(T - O)
+\end{align*}
+where $\eta$ is the learning rate, controlling how radical the model learns (i.e., how long per step the parameters change). 
+
+\subsection{Stopping Criteria}
+
+There are multiple ways to determine whether the learning process can stop: 
+\begin{itemize}
+    \item By maximum training time.
+    \item By maximum \textit{epochs}.
+    \item By minimum accuracy.
+\end{itemize}
+Here, the term \textit{epoch} means numbers of learning cycles that the model goes through the whole data set.
+
+\subsection{Geometric Significance}
+
+The geometric significance of perceptron is simple. If we plot the data vectors in a space, the parameters of perceptron can form a line, plane or hyperplane. The activation function, determines how the space is separated based on that line, place or hyperplane. 
+
+However, for Heaviside step function, the space is geometrically separated. The data in one side of the space will be classified as $0$, and the data in another side of the space will be classified as $1$.
+
+\subsubsection{Linear Separable}
+
+Since perceptron is actually a linear function inside its activation function, the line, plane or hyperplane it forms are strictly straight or flat. That means, perceptron is only applicable to the data that are (or approximately) \textit{linearly separable}. 
+
+\section{Multi-Layer Perceptron (MLP)}
+
+Multi-layer perceptron is a type of \textit{feed-forward} neural network, where feed-forward means the nodes do not form a cycle.
+
+It consists of 3 types of layers: 
+\begin{itemize}
+    \item \textit{Input Layer}, which is also represented by letter $i$.
+    \item \textit{Hidden Layer(s)}, which is (or are) also represented by letter $j$.
+    \item \textit{Output Layer}, which is also represented by letter $k$.
+\end{itemize}
+
+Usually, the input layer contains only input values instead of neural nodes. There can be multiple hidden layers and their job is usually doing the actual fitting. The output layer is usually used to convert the computational result into what actually needed (e.g., apply a threshold to a continuous value).
+
+All layers -- except for the input layer -- consist of multiple neural nodes. These nodes are similar to perceptrons. Their have their own weights and bias, as well as the activation function. In practice, nodes in certain layer tend to have the same activation function. 
+
+The connections between nodes are always from nodes in the previous layer to the nodes in the next layer. There are no connections that skips one or more layers. If each node in a layer is connected to all nodes in the previous layer, the layer is called a \textit{dense} layer.
+
+\subsection{Error / Loss Function}
+
+A often used error / loss function is \textit{sum of squared error} (SSE).
+$$
+\text{SSE} = \frac{1}{2} \sum (O - T)^2
+$$
+You may find that there are a $\frac{1}{2}$ coefficient comparing to a regular SSE. That is because we will differentiate this function later, and it will help simplify the final formula.
+
+\subsection{Activation Function}
+
+The reason why we discuss activation functions here is that, the later derivation of the learning formula strongly depends on what activation function we choose now. A often used activation function is the sigmoid function $\sigma$, 
+$$
+\sigma(x) = \frac{1}{1+e^{-x}} = \frac{e^x}{e^x + 1}
+$$
+
+A beautiful nature of the sigmoid function is its derivative, 
+$$
+\sigma(x)' = \sigma(x)(1 - \sigma(x))
+$$
+
+\subsection{Gradient Descent}
+
+Gradient descent is a methodology to find the local minimum of a function. After applying some special approach, it is also possible to find the global minimum. The intuitive idea of gradient descent is, move the x-value along the negative of gradient (or slope) of the function's graph, so that the y-value is always getting smaller, until the gradient is (or near) $0$, we find the local minimum.
+
+The symbol \textit{nabla} $\nabla$ is used to denote gradient.
+
+\subsubsection{}{How to find the global minimum?}
+We apply gradient descent multiple times by choosing different randomized initial x-value, to find all (or most of) local minimums. Since the global minimum has to be a local minimum, we can find the global minimum between the local minimums by simply comparing them.
+
+\subsubsection{Why don't just solve the equation $\nabla = 0$ ?}
+For most non-linear problems, there is no closed-form solution. Moreover, even if there is a closed-form solution, gradient descent is usually computationally cheaper.
+
+\subsubsection{Example: Gradient Descent for SSE \& Sigmoid}
+
+Recall that the SSE is
+$$
+\text{SSE} = \frac{1}{2} \sum (O - T)^2
+$$
+and the sigmoid function $\sigma$ is
+$$
+\sigma(z) = \frac{1}{1+e^{-z}} = \frac{e^x}{e^z + 1}
+$$
+where $z$ here, is the output of the linear function of a neuron
+$$
+z = \vec{w} \cdot \vec{x} + \theta
+$$
+By substituting, 
+$$
+\text{SSE} = \frac{1}{2} \sum (\frac{1}{1+e^{-(\vec{w} \cdot \vec{x} + \theta)}} - T)^2
+$$
+
+In order to apply gradient descent to minimize the error, we have to derive the gradient of the error function through computing the partial derivative of error with respect to weight, 
+
+\subsection{Over-fitting}
+
+A common approach for MLP to prevent from over-fitting is adding a regulation to keep the weights small. This works because by keeping the weights small, the model is less likely to have large variance, that is, the model is less likely to be sensitive to noise in data.
+
+\section{Convolutional Neural Network (CNN)}
+
+The idea of CNN is similar to MLP, except for
+\begin{itemize}
+    \item The \textit{linear functions} are replaced by convolution.
+    \item The \textit{weights} are replaced by \textit{kernels}.
+    \item The \textit{biases} remain unchanged.
+    \item The \textit{activation functions} remain unchanged.
+\end{itemize}
+We adopt CNN instead of MLP because MLP cannot handle 2D or higher dimension data. It is only possible via the flatten layer, and consequently some information are lost. For example, neighbors are no more neighbors after flattening, and this is sometimes unacceptable. 
+
+A typical CNN structure stacks different types of layers together as follows
+\begin{enumerate}
+    \item a few convolutional layers + a pooling layer; repeated
+    \item a flatten layer
+    \item a dense layer; repeated
+    \item a dense layer with softmax as activation function
+\end{enumerate}
+
+Generally, the convolutional layers are for \textit{feature extracting} and the dense layers are for classification. Through the convolutional layers, the feature map usually get smaller, but also deeper.
+
+\begin{note}
+    CNN is less computational expensive comparing to MLP because CNN trains \textit{shared parameters} (i.e, kernels) for the whole input while MLP trains parameter individually for each input. The deeper reason is that CNN extracts the features from input by recognizing implicit connections between each input and its neighbors.
+\end{note}
+
+\subsection{Input Layer}
+
+\textit{Input Layer} in CNN is a n-D layer with m-depth. 
+
+\begin{note}
+    There is no need to flatten the input.
+\end{note}
+
+For example, for a gray-scale (1-channel) image, the input layer will be a 2D layer and the depth will be 1; for a color (3-channel) image, the input layer will be a 2D layer and the depth will be 3; for something like videos, the layers may be 3D (including the time dimension).
+
+\subsection{Convolutional Layer}
+
+A \textit{Convolutional Layer} consists of $n$ nodes. Each node consists of a kernel, a bias and an activation function. 
+
+The user-specified parameters are \textit{kernel size}, \textit{activation function} and \textit{stride}. In convention, nodes in the same convolutional layer have the same user-specified parameters. Although the kernel size can be specified, the depth of kernel is often as same as the depth of input.
+
+The trainable parameters are \textit{kernel} itself and \textit{bias}. 
+
+\begin{tip}
+    Instead of a single convolutional layer with larger kernel, it is better to stack two convolutional layers with smaller kernel together. 
+\end{tip}
+
+\textit{Activation Function} in CNN is applied to the image pixel-wise. \textit{Rectified Linear Unit (ReLU)} is a more popular activation function in CNN, as it doesn't require expensive computation.
+
+\textit{Stride} is the amount of movement between each application of kernel during convolution process. For example, the default stride is $(1, 1)$, which means the kernel is applied pixel-by-pixel. If the stride is $(2, 1)$, then the kernel is applied once per 2 pixels in x-direction, and pixel by pixel in y-direction. Setting stride to a higher number results in lower output volume and avoids over-fitting.
+
+Given the size of image $S_\text{image}$, the size of padding $S_\text{padding}$, the size of kernel $S_\text{kernel}$ and the size of stride $S_\text{stride}$, the size of output image is
+$$
+S_\text{output} = \frac{(S_\text{image} + 2 \times S_\text{padding}) - S_\text{kernel}}{S_\text{stride}} + 1
+$$
+
+\begin{important}
+    If a convolutional layer outputs $a \times b$ image and it has $c$ nodes, the output size are often denoted as $a \times b \times c$. Think of output of each kernel as a channel.
+\end{important}
+
+\subsection{Pooling Layer}
+
+\textit{Pooling Layer} is the key to ensure that subsequent layers of CNN can pick up larger-scale details than only edges and curves. In short, it is done by shrinking the image. There are many ways to do it, the popular ones are
+\begin{itemize}
+    \item \textit{Max Pooling}: it takes a region as input and outputs the maximum value.
+    \item \textit{Average Pooling}: it takes a region as input and outputs the average value.
+\end{itemize}
+
+The aforementioned pooling layers have no trainable parameters and only one user-specified parameters, which is the pooling size, specifying the size of the region that the pooling layer takes as input.
+
+Given the size of image $S_\text{image}$ and the size of pooling $S_\text{pooling}$, the size of output image is
+$$
+S_\text{output} = \frac{S_\text{image}}{S_\text{pooling}}
+$$
+
+\subsection{Dense (Fully-Connected) Layer}
+
+\textit{Dense Layer} or \textit{Fully-Connected Layer} is the typical layer in MLP. We need these layer for classifying the feature extracted by convolutional layer.
+
+\begin{important}
+    Before feeding n-D data ($n > 1$) into dense layers, a flatten layer should be inserted, because dense layers only accept 1D data.
+\end{important}
+
+\subsection{Dropout Layer}
+
+Neural networks with large amount of parameters usually train on data sets which are relatively small. This causes models to learn \textit{statistical noise} in the training data, and consequently lead to over-fitting. 
+
+\textit{Dropout Layer} is a simple method to prevent models from over-fitting. It randomly drops out (i.e., ignores) some outputs from the previous layer. The only user-specified parameter is the probability at which the outputs are dropped out. There are no trainable parameters in this layer.
+
+\begin{tip}
+    A common value of the parameter is $0.5$.
+\end{tip}
+
+\begin{note}
+    The parameter only specifies the independent probability that each output is dropped. There is no guarantee that exactly that percentage of output is dropped. 
+\end{note}
+
+\subsection{One-Hot Encoding}
+
+\textit{One-Hot Encoding} is a technique to convert categories represented by a numerical value to a list of boolean values. For example, if there is $7$ categories in total and one of the category is represented by $3$, instead of just using $3$, it is converted into one-hot encoding and it becomes $[0, 0, 1, 0, 0, 0, 0]$ (the 3-rd value is 1, or on; and the remaining values are 0, or off). In one-hot encoding, only one value can be on and all other values have to be off.
+
+The purpose that one-hot encoding is adopted is that we do not want categorical data to be identified as numerical data (i.e., a quantity). For example, the model may recognize that the category having larger numerical representation is more important than the category having less numerical representation.
+
+\chapter{Digital Image Processing}
+
+\section{Digital Image}
+
+A \textit{Digital Image} is represented by a matrix. A \textit{Pixel} is an element in the matrix, represented by a vector, which contains some intensity values at the position. The \textit{Dimension} of an image is the matrix's width and height (in other words, rows and columns).
+
+A pixel in an image is uniquely identified by coordinate $(x, y)$. The convention of image coordinate system is as follows: the origin is the upper right corner; the positive x-axis is pointing right and the positive y-axis is pointing down. Like we often do in mathematics and programming, the coordinates start with index 0 and can only be non-negative integers.
+
+\begin{important}
+    It is often a confusion that there are two ways representing image coordinates: 
+    \begin{itemize}
+        \item Representing the dimension by $(w, h)$ (width-height) and a pixel by $(x, y)$.
+        \item Representing the dimension by $(r, c)$ (row-column) and a pixel by $(y, x)$.
+    \end{itemize}
+    The former representation is often used in mathematics as it conforms to the coordinate geometry convention $(x, y)$. The latter representation is often used in programming-related scenarios as it conforms to the 2D array convention \texttt{array[row][column]}. It's important to identify which representation is used, otherwise the image will definitely be messed up.
+\end{important}
+
+\section{Image Processing}
+
+\subsection{Convert to Gray-Scale}
+
+Human's eyes have different sensitivity to different colors. They are very sensitive to green, but not that much to red and blue. Therefore, we calculate the weighted average of colors to obtain a gray-scale value.
+\begin{align*}
+    \mathbf{Gray} 
+    & = 0.299 R + 0.587 G + 0.114 B \\
+    & = (R, G, B) \cdot (0.299, 0.587, 0.114)
+\end{align*}
+
+\subsection{Affine Transformation}
+
+An \textit{Affine Transformation} is an geometric transformation that preserves
+\begin{itemize}
+    \item straight lines (i.e., straight lines are still straight lines after transformation),
+    \item parallelism (i.e., parallel lines are still parallel after transformation), and
+    \item ratio of distance (i.e., ratio of parallel distances remains unchanged).
+\end{itemize}
+but doesn't necessarily preserve
+\begin{itemize}
+    \item Euclidean distances, and
+    \item angles
+\end{itemize}
+
+Any affine transformation can be represented by the following formula
+\begin{align*}
+    T(\vec{x}) = A\vec{x} + B
+\end{align*}
+where $A$ is the \textit{linear transformation matrix} and $B$ is the \textit{translation vector}; which is, actually
+\begin{align*}
+    \begin{bmatrix} 
+        x' \\ 
+        y' \\
+    \end{bmatrix} 
+    & = 
+    \begin{bmatrix}
+        a & b \\
+        c & d \\
+    \end{bmatrix}
+    \begin{bmatrix}
+        x \\
+        y \\
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+        e \\
+        f \\
+    \end{bmatrix}
+\end{align*}
+Equivalently, it is possible to represent linear transformation and translation by multiply the coordinate vector by one single transformation matrix. All we have to do is to use \textit{homogeneous coordinates}, that is, represent the 2-vector $(x, y)$ as a 3-vector $(x, y, 1)$. The last $1$ has no special meaning. It is only for translation so that any translation multiplies it is the translation itself.
+\begin{align*}
+    T(\vec{x}) & = M\vec{x} \\
+    T\left(
+    \begin{bmatrix}
+        x \\
+        y
+    \end{bmatrix}
+    \right)
+    & = 
+    \begin{bmatrix}
+        a & b & e \\
+        c & d & f \\
+    \end{bmatrix}
+    \begin{bmatrix}
+        x \\
+        y \\
+        1 \\
+    \end{bmatrix}
+\end{align*}
+where $M$ is the transformation matrix. To define a affine transformation, the only thing to do is to define the transformation matrix.
+
+\begin{note}
+    The transformation matrix $M$
+    \begin{equation*}
+        \begin{bmatrix}
+            a & b & e \\
+            c & d & f \\
+        \end{bmatrix}
+    \end{equation*}
+    is a simplified version of transformation matrix. The only thing it cannot do is chaining transformations. For example, we cannot do $M_2 M_1 \vec{x}$, as the homogeneous coordinate $\vec{x}$ is degenerated to regular coordinate after applying the first transformation matrix $M_1$, consequently, we cannot apply the second transformation matrix $M_2$ anymore. The full version of transformation matrix is
+    \begin{equation*}
+        \begin{bmatrix}
+            a & b & e \\
+            c & d & f \\
+            0 & 0 & 1 \\
+        \end{bmatrix}
+    \end{equation*}
+    It is simply obtained by adding a $(0, 0, 1)$ row vector at the bottom of the simplified transformation matrix. Applying the simplified transformation matrix will result in a regular coordinate and applying the full version of transformation matrix will remains the homogeneous coordinate. That's the full transformation matrix is chainable.
+\end{note}
+
+\subsubsection{Unit / Identity}
+
+An unit or identity transformation is a transformation that does nothing. It is
+\begin{equation*}
+    \begin{bmatrix}
+        1 & 0 & 0 \\
+        0 & 1 & 0 \\
+    \end{bmatrix}
+\end{equation*}
+
+\subsubsection{Translation}
+
+A translation transformation is one that translates (i.e., shifts) the image. It is
+\begin{equation*}
+    \begin{bmatrix}
+        1 & 0 & \Delta x \\
+        0 & 1 & \Delta y \\
+    \end{bmatrix}
+\end{equation*}
+where $\Delta x$ and $\Delta y$ are respectively the $x$ and $y$ offsets.
+
+\subsubsection{Scaling}
+
+Scaling is a transformation that scales (i.e., resizes) the image. It is
+\begin{equation*}
+    \begin{bmatrix}
+        a & 0 & 0 \\
+        0 & b & 0 \\
+    \end{bmatrix}
+\end{equation*}
+where $a$ and $b$ are respectively the $x$ and $y$ scaling factors.
+
+Once any scaling factors become negative, the transformation becomes reflection.
+
+\begin{important}
+    Once reflection is applied, all coordinates will become $\le 0$. Some convention is to apply a translation after reflection to make all coordinates non-negative.
+\end{important}
+
+\subsubsection{Rotation}
+
+Rotation is a transformation that rotates the image. A rotation matrix that rotates the image by angle $\theta$ (anti-clockwise) about the origin is
+\begin{equation*}
+    \begin{bmatrix}
+         \cos \theta &  \sin \theta & 0 \\
+        -\sin \theta &  \cos \theta & 0 \\
+    \end{bmatrix}
+\end{equation*}
+
+\begin{important}
+    Some conventions use the rotation matrix
+    \begin{equation*}
+        \begin{bmatrix}
+            \cos \theta & -\sin \theta & 0 \\
+            \sin \theta &  \cos \theta & 0 \\
+        \end{bmatrix}
+    \end{equation*} 
+    That's because in digital image processing we often choose downward direction as the positive y-direction, and in mathematics we often choose upward direction as the positive-y direction. We use the digital image processing convention and therefore we adopt the former rotation matrix.
+\end{important}
+
+One may want to rotate the image about points other than the origin. We can first apply a translation to make the origin the point about which to rotate; then apply the rotation; finally apply another translation that restores the point to its original position. That is, to rotate about $(a, b)$, the rotation matrices are
+\begin{equation*}
+    \begin{bmatrix}
+        1 & 0 & a \\
+        0 & 1 & b \\
+        0 & 0 & 1 \\
+    \end{bmatrix}
+    \begin{bmatrix}
+         \cos \theta & \sin \theta & 0 \\
+        -\sin \theta & \cos \theta & 0 \\
+         0           & 0           & 1 \\
+    \end{bmatrix}
+    \begin{bmatrix}
+        1 & 0 & -a \\
+        0 & 1 & -b \\
+        0 & 0 & 1 \\
+    \end{bmatrix}
+\end{equation*}
+which can be multiplied into one single matrix, 
+\begin{equation*}
+    \begin{bmatrix}
+         \cos \theta &  \sin \theta & -a \cos \theta - b \sin \theta + a \\
+        -\sin \theta &  \cos \theta &  a \sin \theta - b \cos \theta - b \\
+        0           &  0           & 1 \\
+    \end{bmatrix}
+\end{equation*}
+\begin{tip}
+    Remember the rightmost transformation matrix is the transformation that is applied the first.
+\end{tip}
+
+\subsubsection{Shearing}
+
+Shearing is a transformation that shears the image (e.g., makes a rectangle parallelogram). It is
+\begin{equation*}
+    \begin{bmatrix}
+        1 & b & 0 \\
+        a & 1 & 0 \\
+    \end{bmatrix}
+\end{equation*}
+where $a$ is the factor that shears the positive-x axis towards positive-y direction, and $b$ is the factor that shears the positive-y axis towards positive-x direction.
+
+\subsection{Types of Image Operation}
+
+There are many ways to classify image operations. One way is based on the region of pixels that is inputted to output the pixel.
+\begin{description}
+    \item[Point] The output at a specific coordinate only depends on the input at exactly same coordinate.
+    \item[Local] The output at a specific coordinate only depends on the input in the neighborhood of that same coordinate.
+    \item[Global] The output at a specific coordinate depends on the whole image.
+\end{description}
+
+\subsection{Contrast Stretching}
+
+\textit{Contrast Stretching} is an image enhancement method that attempts to stretch the contrast of an image by stretching its range of pixels intensity. 
+
+One possible way to perform contrast stretching is to adopt \textit{min-max normalization}. That is, the pixel value is calculated by the following formula
+\begin{equation*}
+    I' = \frac{I - I_\mathrm{min}}{I_\mathrm{max} - I_\mathrm{min}}
+\end{equation*}
+where $I'$ is the output value, $I$ is the input value, $I_\mathrm{min}$ and $I_\mathrm{max}$ are the global minimum and global maximum value respectively.
+
+\begin{note}
+    This method assumes that the valid intensity range is $[0, 1]$. If it is adopted on a 8-bit image, where the valid intensity range is $[0, 255]$, simply do $I' \leftarrow I' \times 255$.
+\end{note}
+
+\subsection{Image Segmentation}
+
+\textit{Image Segmentation} is a way to create binary images from gray-scale images or color images.
+
+\subsubsection{Thresholding}
+
+One simplest way to do image segmentation is to apply a threshold on the image. The pixels with intensity less than the threshold become $0$, and the pixels with intensity greater than the threshold become $1$.
+\begin{equation*}
+    I' = \begin{cases}
+        0, & \text{if } I < T \\
+        1, & \text{if } I > T \\
+    \end{cases}
+\end{equation*}
+
+\begin{note}
+    $0$ and $1$ here denote the minimum value and maximum value of the possible intensity values. For example, if the image is an 8-bit image, then $0$ will be still $0$ but $1$ will become $255$.
+    
+    Here, we do not define what happens when $I = T$ as this is different by convention. 
+\end{note}
+
+\subsubsection{Ridler-Calvard's Method}
+
+Ridler-Calvard's (RC) method is an algorithm that automatically determines the threshold by an initial guess. The instruction of RC's method is as follows:
+\begin{enumerate}
+    \item Set an initial guess of threshold $T$.
+    \item Split the image into foreground and background by $T$.
+    \item Calculate the average intensity of foreground $\mu_1$ and background $\mu_2$ respectively.
+    \item Calculate the new threshold $T' = \frac{\mu_1 + \mu_2}{2}$.
+\end{enumerate}
+This process can be repeated several times until the threshold is \textbf{good enough}. 
+
+\subsubsection{Otsu's Method}
+
+Pass.
+
+\section{Image Convolution}
+
+\textit{Image Convolution} is an operation that applies on the whole image. The operation $O$ is defined as
+\begin{equation*}
+    O(x, y) = \sum_{m, n \in K} K(m, n) I(x-m, y-n)
+\end{equation*}
+where $K$ is the \textit{kernel} and $I$ is the image. 
+
+\textit{Kernel} (also called \textit{filter}, \textit{mask} and \textit{convolution matrix}) can be seen as a matrix containing weights. The convolution process can be seen as doing a weighted sum or dot product.
+
+\begin{important}
+    For convenient purpose, the origin of kernel are often defined as the center of the kernel, and the dimension of kernels are often a equal odd number.
+\end{important}
+
+\subsection{Padding}
+
+While doing convolution, the operation may tend to take some non-existent pixels. For example, if $(x, y) = (0, 0)$ and $(m, n) = (1, 1)$, then we are going to take $I(0-1, 0-1) = I(-1, -1)$, which is illegal! 
+
+There are multiple solutions to this problem. We call these techniques \textit{padding}.
+
+\subsubsection{Ignoring}
+
+This is one of the simplest approaches: whenever the taken pixel is out of bounds, the output pixel is thrown away from the result image. That is, the result image will always be smaller than the input. 
+
+\subsubsection{Zero Padding}
+
+This another simplest approach: whenever the taken pixel is out of bounds, $0$ is used as the intensity of the value instead.
+
+\begin{tip}
+    There are some other padding techniques derived from zero padding: it is possible to pad some other constants instead of $0$. For example, one padding, two padding and max padding... 
+\end{tip}
+
+\subsubsection{Replicating Boundary Pixels}
+
+Whenever the pixel is out of bounds, the nearest valid pixel (either by manhattan distance or Euclidean distance) is used instead.
+
+\subsubsection{Reflecting Boundary Pixels}
+
+Whenever the pixel is out of bounds, draw a axis of symmetry \textbf{out of} the border pixels and use the reflected pixels instead.
+
+\subsubsection{Mirroring Boundary Pixels}
+
+Whenever the pixel is out of bounds, draw a axis of symmetry \textbf{at} the border pixels and use the mirrored pixels instead.
+
+\begin{tip}
+    Reflecting \& Mirroring are similar. Here is an example for better understanding.
+    \begin{center}
+        \begin{tabular}{c|ccc|c}
+            1 & 1 & 2 & 3 & 3 \\\hline
+            1 & 1 & 2 & 3 & 3 \\
+            4 & 4 & 5 & 6 & 6 \\
+            7 & 7 & 8 & 9 & 9 \\\hline
+            7 & 7 & 8 & 9 & 9 \\
+        \end{tabular}
+        \small{(Reflecting)}
+    \end{center}
+    \begin{center}
+        \begin{tabular}{c|ccc|c}
+            5 & 4 & 5 & 6 & 5 \\\hline
+            2 & 1 & 2 & 3 & 2 \\
+            5 & 4 & 5 & 6 & 5 \\
+            8 & 7 & 8 & 9 & 8 \\\hline
+            5 & 4 & 5 & 6 & 5 \\
+        \end{tabular}
+        \small{(Mirroring)}
+    \end{center}
+\end{tip}
+
+
+\subsection{Kernels}
+
+Kernels are already well-developed, which means there are many mature kernels that we can directly use.
+
+\subsubsection{Smoothing}
+
+A \textit{smoothing} (or \textit{blurring}, \textit{averaging}) kernel is one that replaces the pixel by the average value of its neighbors. The kernel is: 
+\begin{equation*}
+    \frac{1}{n^2} J_n
+\end{equation*}
+where $J_n$ is a matrix of ones with size $n$. For example, a smoothing kernel with size $3$ is
+\begin{equation*}
+    \frac{1}{9} J_3 = \begin{bmatrix}
+        1/9 & 1/9 & 1/9 \\
+        1/9 & 1/9 & 1/9 \\
+        1/9 & 1/9 & 1/9 \\
+    \end{bmatrix}
+\end{equation*}
+
+\begin{note}
+    The sum of elements in an arbitrary smoothing kernel are always $1$.
+\end{note}
+
+\subsubsection{Sharpening}
+
+A \textit{sharpening} kernel is one that sharpens the image. It emphasizes the difference in adjacent pixels. The typical sharpening kernel is like
+\begin{equation*}
+    \begin{bmatrix}
+        -1 & -1 & -1 \\
+        -1 &  9 & -1 \\
+        -1 & -1 & -1 \\
+    \end{bmatrix}
+    \text{ or }
+    \begin{bmatrix}
+         0 & -1 &  0 \\
+        -1 &  5 & -1 \\
+         0 & -1 &  0 \\
+    \end{bmatrix}
+\end{equation*}
+
+\begin{note}
+    The sum of elements in an arbitrary sharpening kernel are always $1$.
+\end{note}
+
+\subsubsection{Edge Detection}
+
+A \textit{Edge Detection} kernel is one that outputs the edge (of any or all directions) of an image.
+
+For example, a \textit{Prewitt} edge detection kernel is like
+\begin{equation*}
+    \begin{bmatrix}
+        -1 & 0 & 1 \\
+        -1 & 0 & 1 \\
+        -1 & 0 & 1 \\
+    \end{bmatrix}
+    \text{ for x-direction and }
+    \begin{bmatrix}
+        -1 & -1 & -1 \\
+         0 &  0 &  0 \\
+         1 &  1 &  1 \\
+    \end{bmatrix}
+    \text{ for y-direction}
+\end{equation*}
+
+Another popular edge detection kernel is \textit{Sobel} edge detection kernel. It is like
+\begin{equation*}
+    \begin{bmatrix}
+        -1 & 0 & 1 \\
+        -2 & 0 & 2 \\
+        -1 & 0 & 1 \\
+    \end{bmatrix}
+    \text{ for x-direction and }
+    \begin{bmatrix}
+        -1 & -2 & -1 \\
+         0 &  0 &  0 \\
+         1 &  2 &  1 \\
+    \end{bmatrix}
+    \text{ for y-direction}
+\end{equation*}
+
+To merge x-direction and y-direction edges, it is possible to calculate the distance of them, by
+\begin{equation*}
+    O(x, y) = \sqrt{X(x, y)^2 + Y(x, y)^2}
+\end{equation*}
+where $O(x, y)$ is the output at $(x, y)$, $X$ and $Y$ are respectively the x-direction and y-direction edge images.
+
+\begin{note}
+    The sum of elements in an arbitrary edge detection kernel is always $0$.
+\end{note}
+
+\chapter{Minimax and Alpha-Beta Pruning}
+
+\section{Games}
+
+\subsection{Perfect and Imperfect Information Game}
+
+\textit{Perfect information games} are the games that all players know all information of their opponents. \textit{Imperfect information games} are the games that players do not know all information of their opponents.
+
+\subsection{Zero-Sum and Non-Zero-Sum Game}
+
+A \textit{zero-sum game} is one in which no wealth is created or destroyed. A non-zero-sum game is one in which one player's gain is not necessarily equal to another player's loss.
+
+\subsection{Deterministic Game and Non-Deterministic Game}
+
+\textit{Deterministic Game} is one that doesn't involve random process. \textit{Non-Deterministic Game} is one that involves random process.
+
+\subsection{Examples}
+
+Here are a few examples of types of games:
+
+\begin{center}
+    \begin{tabular}{c|ccc}
+        Game & Perfect Information & Zero-Sum & Deterministic \\
+        \hline
+        Tic-Tac-Toe & Yes & Yes & Yes \\
+        Chess & Yes & Yes & Yes \\
+        Monopoly & Yes & No & No \\
+        Poker & No & Yes & No \\
+    \end{tabular}
+\end{center}
+
+\begin{tip}
+    The terms perfect / imperfect information are used for indicating whether players' information are transparent and shared to each other; while deterministic / non-deterministic are used for indicating whether there are some random information that all players cannot predict.
+\end{tip}
+
+\section{Minimax}
+
+\textit{Minimax} is a recursive, searching, brute-force algorithm that chooses the optimal move for the current player, assuming that the another player is also playing optimally.
+
+In minimax, the two players are called maximizer and minimizer. The scoring method is based on the standpoint of the maximizer. The maximizer will try to maximize the score, and the minimizer will try to minimizer the score. That is, the maximizer will try to maximize the probability that he wins and the minimizer will try to minimize the probability that maximizer wins.
+
+\begin{note}
+    It is often to denote AI as the maximizer and the human as the minimizer.
+\end{note}
+
+\subsection{Procedure}
+
+The minimax algorithm consists of the following steps.
+\begin{enumerate}
+    \item Constructs and initializes the game decision tree. All possible moves are constructed as the decision tree. Assigns identities to nodes in each level of the tree, representing which player is taking turn at that moment.
+    \item Applies the \textit{utility function} to each terminal state to initialize the utility of the terminal nodes.
+    \item Starting from the terminal nodes, computes the utility of their parent nodes $U$ by
+    \begin{equation*}
+        U = \begin{cases}
+            \max U_n \in \text{child nodes}, & \text{ if } U \text{ is maximizer} \\
+            \min U_n \in \text{child nodes}, & \text{ if } U \text{ is minimizer} 
+        \end{cases}
+    \end{equation*}
+    where $U_n$ are the utilities of the nodes' children. Repeat this step until the utility of parent node is computed.
+    \item Based on the identity of the root node and the utilities of its children, the root node chooses the move that leads to the maximum / minimum utility.
+    \begin{equation*}
+        D = \begin{cases}
+            \argmax U_n \in \text{child nodes}, & \text{ if } U \text{ is maximizer} \\
+            \argmax U_n \in \text{child nodes}, & \text{ if } U \text{ is minimizer} 
+        \end{cases}
+    \end{equation*}
+    where $U_n$ are the utilities of the root node's children.
+\end{enumerate}
+
+\begin{tip}
+    The utility function must be defined following the rule that the utility of maximizer's win must greater than the maximizer's loss.
+\end{tip}
+
+\begin{note}
+    It is assumed that the opponent (i.e., human player) is playing optimally. However, if the human player isn't playing optimally, the output from minimax will be even better.
+\end{note}
+
+\subsection{Caveats}
+
+The game decision tree can become very large, because the tree size is growing exponentially, and the branching factor is also large. Therefore, the computational time and space will be very large too. Exploring the whole tree becomes impossible as there are only limited time and space.
+
+One possible way to mitigate the problem is to adopt \textit{Alpha-Beta Pruning}.
+
+\section{Alpha-Beta Pruning}
+
+Sometimes it can be predicted that some branches are not worth to search. This is done by a technique called \textit{Alpha-Beta Pruning}. 
+
+\subsection{Idea}
+
+The idea of alpha-beta pruning is as follows: 
+\begin{itemize}
+    \item Track the maximum utility that has been seen by the current node (if the node is a maximizer) and its ancestor maximizer nodes. Denote this maximum value as $\alpha$.
+    \item Track the minimum utility that has been seen by the current node (if the node is a minimizer) and its ancestor minimizer nodes. Denote this minimum value as $\beta$.
+    \item Whenever $\alpha \ge \beta$, prune the current branch (i.e., the current node and its descendant nodes).
+    \item It works because: 
+    \begin{itemize}        
+        \item If $\alpha \ge \beta$, the current node is minimizer and the parent node is maximizer, which means the parent node holds a value $\alpha$ which is greater than an arbitrary value $\beta$ in the current node. Since the current node is minimizer, the only possible values $\beta'$ that the current node may choose must $\le \beta$. Therefore,
+        \begin{equation*}
+            \alpha \ge \beta \Rightarrow \alpha \ge \beta', \forall \beta' \le \beta
+        \end{equation*}
+        The parent node holds $\alpha$ that is proven cannot be further updated (i.e., it is greater than any other possible values) by this branch, so it is pruned.
+        
+        \item If $\alpha \ge \beta$, the current node is maximizer and the parent node is minimizer, which means the parent node holds a value $\beta$ which is less than an arbitrary value $\alpha$ in the current node. Since the current node is maximizer, the only possible values $\alpha'$ that the current node may choose must $\ge \alpha$. Therefore, 
+        \begin{equation*}
+            \alpha \ge \beta \Rightarrow \beta \le \alpha', \forall \alpha' \ge \alpha
+        \end{equation*}
+        The parent node holds $\beta$ that is proven cannot be further updated (i.e., it is less than any other possible values) by this branch, so it is pruned.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Procedure}
+
+The procedure of applying minimax algorithm with alpha-beta pruning is as follows. Assume \textit{depth-first search (DFS)} is used as the searching method.
+
+\begin{enumerate}
+    \item Maintain individual $\alpha$ and $\beta$ for each node.
+    \item When searching downwards, pass current $\alpha$ and $\beta$ to the child node.
+    \item Check if $\alpha \ge \beta$. If so, prune the current node and its children.
+    \item When the utility of a node is updated, compare it with $\alpha$ or $\beta$: 
+    \begin{itemize}
+        \item for maximizer nodes, if the new utility is greater than $\alpha$, let $\alpha$ be that utility. 
+        \item for minimizer nodes, if the new utility is less than $\beta$, let $\beta$ be that utility. 
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Pros \& Cons}
+
+The advantages of alpha-beta pruning are
+\begin{itemize}
+    \item It prunes the branches of the game decision tree that is not necessary to search.
+\end{itemize}
+
+The disadvantages of alpha-beta pruning are
+\begin{itemize}
+    \item Although it prunes a huge amount of branches, it still needs to search all the way to terminal states.
+\end{itemize}
+
+\subsubsection{Approaches to Mitigate the Problems}
+\begin{itemize}
+    \item Set a depth limit.
+    \item Use a heuristic utility function to estimate the probability of winning.
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,46 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{admonition}[2023/11/21 Admonition]
+
+\RequirePackage{parskip}
+\RequirePackage{fontspec}
+\RequirePackage{xcolor}
+\RequirePackage{adjustbox}
+\RequirePackage{mdframed}
+
+\ProcessOptions\relax
+
+\newfontfamily{\octicon}{icomoon.ttf}[Path=./Octicon/]
+\DeclareTextFontCommand{\textocticon}{\octicon}
+
+% 1: Icon; 2: Title; 3: Color
+\newenvironment{admonition}[3]
+{
+  \vspace{\parskip}
+  \begin{mdframed}[
+      hidealllines=true,
+      leftline=true,
+      linewidth=0.65mm,
+      linecolor=#3,
+      frametitle={\textcolor{#3}{#1\quad{#2}}},
+    ]
+    }
+    {
+  \end{mdframed}
+}
+
+\definecolor{AdmonitionNoteColor}{RGB}{9, 105, 218}
+\definecolor{AdmonitionTipColor}{RGB}{26, 127, 55}
+\definecolor{AdmonitionImportantColor}{RGB}{130, 80, 223}
+\definecolor{AdmonitionWarningColor}{RGB}{154, 103, 0}
+\definecolor{AdmonitionCautionColor}{RGB}{209, 36, 47}
+\newcommand{\AdmonitionNoteIcon}{\adjustbox{raise=-0.25ex}{\textocticon{^^^^ea23}}}
+\newcommand{\AdmonitionTipIcon}{\adjustbox{raise=-0.25ex}{\textocticon{^^^^ea3c}}}
+\newcommand{\AdmonitionImportantIcon}{\adjustbox{raise=-0.25ex}{\textocticon{^^^^eabf}}}
+\newcommand{\AdmonitionWarningIcon}{\adjustbox{raise=-0.25ex}{\textocticon{^^^^e902}}}
+\newcommand{\AdmonitionCautionIcon}{\adjustbox{raise=-0.25ex}{\textocticon{^^^^eb05}}}
+
+\newenvironment{note}{\begin{admonition}{\AdmonitionNoteIcon}{Note}{AdmonitionNoteColor}}{\end{admonition}}
+\newenvironment{tip}{\begin{admonition}{\AdmonitionTipIcon}{Tip}{AdmonitionTipColor}}{\end{admonition}}
+\newenvironment{important}{\begin{admonition}{\AdmonitionImportantIcon}{Important}{AdmonitionImportantColor}}{\end{admonition}}
+\newenvironment{warning}{\begin{admonition}{\AdmonitionWarningIcon}{Warning}{AdmonitionWarningColor}}{\end{admonition}}
+\newenvironment{caution}{\begin{admonition}{\AdmonitionCautionIcon}{Caution}{AdmonitionCautionColor}}{\end{admonition}}
